@@ -7,7 +7,7 @@ public class Conversation : BaseEntity
 {
     public Guid TenantId { get; private set; }
     public Guid UserId { get; private set; }
-    public string Title { get; private set; }
+    public string Title { get; private set; } = null!;
     public ConversationStatus Status { get; private set; }
     public int TotalTokensUsed { get; private set; }
 

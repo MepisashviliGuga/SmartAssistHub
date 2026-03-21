@@ -6,8 +6,8 @@ namespace SmartAssistHub.Domain.Entities;
 
 public class Tenant : BaseEntity
 {
-    public string Name { get; private set; }
-    public Slug Slug { get; private set; }
+    public string Name { get; private set; } = null!;
+    public Slug Slug { get; private set; } = null!;
     public bool IsActive { get; private set; }
     public TenantPlan Plan { get; private set; }
     public int MonthlyTokenLimit { get; private set; }
@@ -16,8 +16,8 @@ public class Tenant : BaseEntity
     private readonly List<User> _users = new();
     public IReadOnlyCollection<User> Users => _users.AsReadOnly();
 
-    //private readonly List<Document> _documents = new();
-    //public IReadOnlyCollection<Document> Documents => _documents.AsReadOnly();
+    private readonly List<Document> _documents = new();
+    public IReadOnlyCollection<Document> Documents => _documents.AsReadOnly();
 
     private Tenant() { }
 
@@ -36,17 +36,17 @@ public class Tenant : BaseEntity
         };
     }
 
-    //public void AddDocument(Document document)
-    //{
-    //    ArgumentNullException.ThrowIfNull(document);
+    public void AddDocument(Document document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
 
-    //    if (!IsActive)
-    //        throw new InvalidOperationException(
-    //            "Cannot add documents to an inactive tenant.");
+        if (!IsActive)
+            throw new InvalidOperationException(
+                "Cannot add documents to an inactive tenant.");
 
-    //    _documents.Add(document);
-    //    SetUpdated();
-    //}
+        _documents.Add(document);
+        SetUpdated();
+    }
 
     public void AddUser(User user)
     {

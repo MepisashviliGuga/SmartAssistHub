@@ -8,7 +8,7 @@ public class Message : BaseEntity
     public Guid ConversationId { get; private set; }
     public Guid TenantId { get; private set; }
     public MessageRole Role { get; private set; }
-    public string Content { get; private set; }
+    public string Content { get; private set; } = null!;
     public int TokensUsed { get; private set; }
     public bool IsStreaming { get; private set; }
 
