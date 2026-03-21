@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-namespace SmartAssistHub.Domain.Common;
+namespace SmartAssistHub.Domain.ValueObjects;
 
 public record Slug
 {

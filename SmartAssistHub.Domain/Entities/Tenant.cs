@@ -1,5 +1,6 @@
 ﻿using SmartAssistHub.Domain.Common;
 using SmartAssistHub.Domain.Enums;
+using SmartAssistHub.Domain.ValueObjects;
 
 namespace SmartAssistHub.Domain.Entities;
 
@@ -15,8 +16,8 @@ public class Tenant : BaseEntity
     private readonly List<User> _users = new();
     public IReadOnlyCollection<User> Users => _users.AsReadOnly();
 
-    private readonly List<Document> _documents = new();
-    public IReadOnlyCollection<Document> Documents => _documents.AsReadOnly();
+    //private readonly List<Document> _documents = new();
+    //public IReadOnlyCollection<Document> Documents => _documents.AsReadOnly();
 
     private Tenant() { }
 
@@ -35,17 +36,17 @@ public class Tenant : BaseEntity
         };
     }
 
-    public void AddDocument(Document document)
-    {
-        ArgumentNullException.ThrowIfNull(document);
+    //public void AddDocument(Document document)
+    //{
+    //    ArgumentNullException.ThrowIfNull(document);
 
-        if (!IsActive)
-            throw new InvalidOperationException(
-                "Cannot add documents to an inactive tenant.");
+    //    if (!IsActive)
+    //        throw new InvalidOperationException(
+    //            "Cannot add documents to an inactive tenant.");
 
-        _documents.Add(document);
-        SetUpdated();
-    }
+    //    _documents.Add(document);
+    //    SetUpdated();
+    //}
 
     public void AddUser(User user)
     {
