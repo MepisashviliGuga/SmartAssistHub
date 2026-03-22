@@ -20,3 +20,11 @@ This coordination belongs in the SendMessage use case in the
 Application layer — not in the Domain entities themselves.
 Both saves must happen in the same transaction to prevent
 inconsistent token counts.
+
+### IsEmailVerified — source of truth
+
+Azure AD B2C is the source of truth for email verification.
+User.IsEmailVerified is a cached business flag only.
+On every authenticated request the API layer syncs this value
+from the email_verified JWT claim if out of sync.
+Never trust the DB value over the JWT claim.

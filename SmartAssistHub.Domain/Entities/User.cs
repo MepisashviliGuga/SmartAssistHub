@@ -13,10 +13,12 @@ public class User : BaseEntity
     public UserRole Role { get; private set; }
     public bool IsActive { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
+    public bool IsEmailVerified { get; private set; }
+    public DateTime? EmailVerifiedAt { get; private set; }
 
-    //private readonly List<Conversation> _conversations = new();
-    //public IReadOnlyCollection<Conversation> Conversations =>
-    //    _conversations.AsReadOnly();
+    private readonly List<Conversation> _conversations = new();
+    public IReadOnlyCollection<Conversation> Conversations =>
+        _conversations.AsReadOnly();
 
     private User() { }
 
@@ -41,6 +43,8 @@ public class User : BaseEntity
             Email = Email.Create(email),
             Role = role,
             IsActive = true,
+            IsEmailVerified = false,
+            EmailVerifiedAt = null,
             LastLoginAt = null
         };
     }
@@ -64,6 +68,21 @@ public class User : BaseEntity
     public void Deactivate()
     {
         IsActive = false;
+        SetUpdated();
+    }
+
+    public void VerifyEmail()
+    {
+        if (!IsActive)
+            throw new InvalidOperationException(
+                "Cannot verify email of an inactive user.");
+
+        if (IsEmailVerified)
+            throw new InvalidOperationException(
+                "Email is already verified.");
+
+        IsEmailVerified = true;
+        EmailVerifiedAt = DateTime.UtcNow;
         SetUpdated();
     }
 
