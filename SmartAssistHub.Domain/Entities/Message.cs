@@ -1,5 +1,6 @@
 ﻿using SmartAssistHub.Domain.Common;
 using SmartAssistHub.Domain.Enums;
+using SmartAssistHub.Domain.Events;
 
 namespace SmartAssistHub.Domain.Entities;
 
@@ -68,6 +69,13 @@ public class Message : BaseEntity
 
         Content = content;
         TokensUsed = tokensUsed;
+        
+        RaiseDomainEvent(new MessageCompletedEvent(
+        Id,
+        ConversationId,
+        TenantId,
+        tokensUsed));
+
         SetUpdated();
     }
 }

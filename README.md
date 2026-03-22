@@ -29,13 +29,16 @@ production problem:
 ## Architecture
 
 Clean Architecture with strict dependency rules enforced at the compiler level.
-```
-Domain          → no dependencies        (business entities)
-Application     → Domain                 (use cases, interfaces)
-Persistence     → Application + Domain   (EF Core, repositories)
-Infrastructure  → Application + Domain   (Azure AI, Redis, Service Bus)
-Api             → all                    (composition root, HTTP, SignalR)
-```
+
+Domain → no dependencies (business entities)
+
+Application → Domain (use cases, interfaces)
+
+Persistence → Application + Domain (EF Core, repositories)
+
+Infrastructure → Application + Domain (Azure AI, Redis, Service Bus)
+
+Api → all (composition root, HTTP, SignalR)
 
 ---
 
@@ -60,7 +63,7 @@ Api             → all                    (composition root, HTTP, SignalR)
 
 | Phase | Status |
 |---|---|
-| Solution structure + Domain entities | In progress |
+| Solution structure + Domain entities | ✓ Complete |
 | Application layer + use cases | Pending |
 | Persistence layer + repositories | Pending |
 | Infrastructure — AI + RAG pipeline | Pending |
@@ -75,35 +78,21 @@ Api             → all                    (composition root, HTTP, SignalR)
 
 ## Running locally
 
-> Prerequisites: .NET 8, Docker Desktop, Visual Studio 2022
-```bash
-# Start local dependencies (Redis, SQL Server)
-docker-compose up -d
+Prerequisites: .NET 8, Docker Desktop, Visual Studio 2022
 
-# Run the API
-cd src/Presentation/SmartAssistHub.Api
-dotnet run
-```
+Start local dependencies (Redis, SQL Server):
+
+    docker-compose up -d
+
+Run the API:
+
+    cd src/Presentation/SmartAssistHub.Api
+    dotnet run
 
 ---
 
 ## Key concepts explained
 
 Each of the hard architectural decisions in this project has a dedicated explanation
-in the `/docs` folder. If you're reviewing this project and want to understand why
+in the /docs folder. If you are reviewing this project and want to understand why
 a specific decision was made, start there.
-```
-
----
-
-## The /docs folder
-
-Notice the README mentions a `/docs` folder. Create it now — right-click solution → **Add** → **New Solution Folder** → name it `docs`. We'll add a markdown file to it for each major concept as we implement it. By the end of the project this folder becomes a technical journal that proves you understand every decision.
-
----
-
-## Commit and push
-
-Go to **Git** → **Commit or Stash**. Write this commit message:
-```
-chore: add README and docs folder structure

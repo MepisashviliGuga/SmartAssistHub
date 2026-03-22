@@ -1,5 +1,6 @@
 ﻿using SmartAssistHub.Domain.Common;
 using SmartAssistHub.Domain.Enums;
+using SmartAssistHub.Domain.Events;
 using SmartAssistHub.Domain.ValueObjects;
 
 namespace SmartAssistHub.Domain.Entities;
@@ -25,7 +26,7 @@ public class Tenant : BaseEntity
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        return new Tenant
+        var tenant = new Tenant
         {
             Name = name,
             Slug = Slug.Generate(name),
@@ -34,6 +35,8 @@ public class Tenant : BaseEntity
             MonthlyTokenLimit = GetTokenLimitForPlan(plan),
             TokensUsedThisMonth = 0
         };
+        tenant.RaiseDomainEvent(new TenantCreatedEvent(tenant.Id, tenant.Name, tenant.Slug.Value));
+        return tenant;
     }
 
     public void AddDocument(Document document)
@@ -83,7 +86,12 @@ public class Tenant : BaseEntity
 
     public void Deactivate()
     {
+        if (!IsActive)
+            throw new InvalidOperationException(
+                "Tenant is already deactivated.");
+
         IsActive = false;
+        RaiseDomainEvent(new TenantDeactivatedEvent(Id));
         SetUpdated();
     }
 

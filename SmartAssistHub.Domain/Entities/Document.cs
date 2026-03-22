@@ -1,5 +1,6 @@
 ﻿using SmartAssistHub.Domain.Common;
 using SmartAssistHub.Domain.Enums;
+using SmartAssistHub.Domain.Events;
 using SmartAssistHub.Domain.ValueObjects;
 
 namespace SmartAssistHub.Domain.Entities;
@@ -57,7 +58,7 @@ public class Document : BaseEntity
 
         ValidateBlobStoragePath(blobStoragePath);
 
-        return new Document
+        var document = new Document
         {
             TenantId = tenantId,
             UploadedByUserId = uploadedByUserId,
@@ -69,6 +70,14 @@ public class Document : BaseEntity
             FailureReason = null,
             ProcessedAt = null
         };
+
+        document.RaiseDomainEvent(new DocumentUploadedEvent(
+            document.Id,
+            document.TenantId,
+            document.UploadedByUserId,
+            document.FileName.Value));
+
+        return document;
     }
 
     public void StartProcessing()
@@ -88,6 +97,7 @@ public class Document : BaseEntity
 
         Status = DocumentStatus.Processing;
         FailureReason = null;
+        RaiseDomainEvent(new DocumentProcessingStartedEvent(Id, TenantId));
         SetUpdated();
     }
 
@@ -165,6 +175,7 @@ public class Document : BaseEntity
         Status = DocumentStatus.Ready;
         ProcessedAt = DateTime.UtcNow;
         FailureReason = null;
+        RaiseDomainEvent(new DocumentReadyEvent(Id, TenantId, _chunks.Count));
         SetUpdated();
     }
 
@@ -178,6 +189,7 @@ public class Document : BaseEntity
 
         Status = DocumentStatus.Failed;
         FailureReason = reason;
+        RaiseDomainEvent(new DocumentFailedEvent(Id, TenantId, reason));
         SetUpdated();
     }
 
