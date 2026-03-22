@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartAssistHub.Application\SmartAssistHub.Application.csproj" />
     <ProjectReference Include="..\SmartAssistHub.Infrastructure\SmartAssistHub.Infrastructure.csproj" />
     <ProjectReference Include="..\SmartAssistHub.Persistence\SmartAssistHub.Persistence.csproj" />
