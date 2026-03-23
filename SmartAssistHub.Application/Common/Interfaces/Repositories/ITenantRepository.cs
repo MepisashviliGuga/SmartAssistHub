@@ -31,4 +31,12 @@ public interface ITenantRepository
     Task<Slug> GenerateUniqueSlugAsync(
         string baseSlug,
         CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Tenant>> GetAllAsync(
+    int page,
+    int pageSize,
+    CancellationToken cancellationToken = default);
+
+    Task<int> CountAsync(
+        CancellationToken cancellationToken = default);
 }
