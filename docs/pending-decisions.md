@@ -1,10 +1,9 @@
 ## Pending Architectural Decisions
 
 ### Slug uniqueness
-Slug.Generate() produces the base slug only.
-Uniqueness enforcement is deferred to the Application layer
-via ISlugUniquenessChecker — to be implemented when we
-build the CreateTenant use case.
+~~Deferred to Application layer via ISlugUniquenessChecker~~
+RESOLVED: SlugExistsAsync and GenerateUniqueSlugAsync added
+directly to ITenantRepository. Implemented in Persistence layer.
 
 ### Token usage coordination between Conversation and Tenant
 When a message is completed, token usage must be recorded on BOTH:
