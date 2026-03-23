@@ -1,5 +1,5 @@
 ﻿using SmartAssistHub.Domain.Entities;
-
+using SmartAssistHub.Domain.ValueObjects;
 namespace SmartAssistHub.Application.Common.Interfaces.Repositories;
 
 public interface ITenantRepository
@@ -28,7 +28,7 @@ public interface ITenantRepository
     string slug,
     CancellationToken cancellationToken = default);
 
-    Task<string> GenerateUniqueSlugAsync(
+    Task<Slug> GenerateUniqueSlugAsync(
         string baseSlug,
         CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@
 using SmartAssistHub.Application.Common.Interfaces;
 using SmartAssistHub.Application.Common.Interfaces.Repositories;
 using SmartAssistHub.Domain.Entities;
+using SmartAssistHub.Domain.ValueObjects;
 
 namespace SmartAssistHub.Application.Features.Tenants.Commands.CreateTenant;
 
@@ -23,13 +24,12 @@ public class CreateTenantCommandHandler
         CreateTenantCommand command,
         CancellationToken cancellationToken)
     {
-        var baseSlug = Domain.ValueObjects.Slug
-            .Generate(command.Name).Value;
+        var baseSlug = Slug.Generate(command.Name);
 
         var uniqueSlug = await _tenantRepository
-            .GenerateUniqueSlugAsync(baseSlug, cancellationToken);
+            .GenerateUniqueSlugAsync(baseSlug.Value, cancellationToken);
 
-        var tenant = Tenant.Create(command.Name, command.Plan);
+        var tenant = Tenant.Create(command.Name, uniqueSlug, command.Plan);
 
         await _tenantRepository.AddAsync(tenant, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

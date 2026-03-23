@@ -22,14 +22,14 @@ public class Tenant : BaseEntity
 
     private Tenant() { }
 
-    public static Tenant Create(string name, TenantPlan plan)
+    public static Tenant Create(string name, Slug slug, TenantPlan plan)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         var tenant = new Tenant
         {
             Name = name,
-            Slug = Slug.Generate(name),
+            Slug = slug,
             IsActive = true,
             Plan = plan,
             MonthlyTokenLimit = GetTokenLimitForPlan(plan),
