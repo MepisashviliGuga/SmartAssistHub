@@ -1,4 +1,5 @@
-﻿using SmartAssistHub.Domain.Entities;
+﻿using SmartAssistHub.Application.Common.Models;
+using SmartAssistHub.Domain.Entities;
 
 namespace SmartAssistHub.Application.Common.Interfaces.Repositories;
 
@@ -28,5 +29,12 @@ public interface IUserRepository
 
     Task<User?> GetByExternalIdAsync(
     string externalId,
+    CancellationToken cancellationToken = default);
+
+
+    Task<PagedResult<User>> GetPagedByTenantAsync(
+    Guid tenantId,
+    int page,
+    int pageSize,
     CancellationToken cancellationToken = default);
 }
