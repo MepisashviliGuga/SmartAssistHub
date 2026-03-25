@@ -8,6 +8,7 @@ namespace SmartAssistHub.Domain.Entities;
 public class User : BaseEntity
 {
     public Guid TenantId { get; private set; }
+    public string ExternalId { get; private set; } = null!;
     public string FirstName { get; private set; } = null!;
     public string LastName { get; private set; } = null!;
     public Email Email { get; private set; } = null!;
@@ -25,11 +26,13 @@ public class User : BaseEntity
 
     public static User Create(
         Guid tenantId,
+        string externalId,
         string firstName,
         string lastName,
         string email,
         UserRole role = UserRole.Member)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(externalId);
         ArgumentException.ThrowIfNullOrWhiteSpace(firstName);
         ArgumentException.ThrowIfNullOrWhiteSpace(lastName);
         if (tenantId == Guid.Empty)
@@ -39,6 +42,7 @@ public class User : BaseEntity
         var user = new User
         {
             TenantId = tenantId,
+            ExternalId = externalId,
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
             Email = Email.Create(email),
