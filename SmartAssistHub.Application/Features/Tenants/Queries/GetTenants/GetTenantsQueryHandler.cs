@@ -1,11 +1,12 @@
 ﻿using MediatR;
 using SmartAssistHub.Application.Common.Interfaces.Repositories;
+using SmartAssistHub.Application.Common.Models;
 using SmartAssistHub.Application.Features.Tenants.Common;
 
 namespace SmartAssistHub.Application.Features.Tenants.Queries.GetTenants;
 
 public class GetTenantsQueryHandler
-    : IRequestHandler<GetTenantsQuery, GetTenantsResult>
+    : IRequestHandler<GetTenantsQuery, PagedResult<TenantDto>>
 {
     private readonly ITenantRepository _tenantRepository;
 
@@ -15,17 +16,14 @@ public class GetTenantsQueryHandler
         _tenantRepository = tenantRepository;
     }
 
-    public async Task<GetTenantsResult> Handle(
+    public async Task<PagedResult<TenantDto>> Handle(
         GetTenantsQuery query,
         CancellationToken cancellationToken)
     {
-        var tenants = await _tenantRepository
-            .GetAllAsync(query.Page, query.PageSize, cancellationToken);
+        var pagedTenants = await _tenantRepository
+            .GetPagedAsync(query.Page, query.PageSize, cancellationToken);
 
-        var totalCount = await _tenantRepository
-            .CountAsync(cancellationToken);
-
-        var dtos = tenants
+        var dtos = pagedTenants.Items
             .Select(t => new TenantDto(
                 t.Id,
                 t.Name,
@@ -37,10 +35,10 @@ public class GetTenantsQueryHandler
                 t.CreatedAt))
             .ToList();
 
-        return new GetTenantsResult(
+        return new PagedResult<TenantDto>(
             dtos,
-            totalCount,
-            query.Page,
-            query.PageSize);
+            pagedTenants.TotalCount,
+            pagedTenants.Page,
+            pagedTenants.PageSize);
     }
 }

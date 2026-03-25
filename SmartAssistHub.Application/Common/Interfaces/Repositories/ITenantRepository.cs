@@ -1,4 +1,5 @@
-﻿using SmartAssistHub.Domain.Entities;
+﻿using SmartAssistHub.Application.Common.Models;
+using SmartAssistHub.Domain.Entities;
 using SmartAssistHub.Domain.ValueObjects;
 namespace SmartAssistHub.Application.Common.Interfaces.Repositories;
 
@@ -32,11 +33,8 @@ public interface ITenantRepository
         string baseSlug,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<Tenant>> GetAllAsync(
-    int page,
-    int pageSize,
-    CancellationToken cancellationToken = default);
-
-    Task<int> CountAsync(
+    Task<PagedResult<Tenant>> GetPagedAsync(
+        int page,
+        int pageSize,
         CancellationToken cancellationToken = default);
 }
