@@ -105,3 +105,18 @@ Use ForbiddenException when:
 Use UnauthorizedException when:
     - No JWT token present
     - JWT token is invalid or expired
+
+### SendMessage — synchronous token recording exception
+
+In SendMessage handler, tenant.RecordTokenUsage() is called
+synchronously in the same transaction as the conversation save.
+
+This is an intentional exception to the eventual consistency
+rule for token tracking. The budget check happens at request
+start — if we defer token recording to the Outbox, concurrent
+requests could all pass the budget check before any of them
+records usage, allowing budget overruns.
+
+MessageCompletedEvent still fires via domain events for
+analytics and other side effects. Only the budget-critical
+RecordTokenUsage is handled synchronously.
