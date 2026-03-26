@@ -121,6 +121,17 @@ MessageCompletedEvent still fires via domain events for
 analytics and other side effects. Only the budget-critical
 RecordTokenUsage is handled synchronously.
 
+### SendMessage — token counting optimization
+
+Currently calls CountTokensAsync after streaming completes.
+Azure OpenAI streaming response includes usage metadata
+with exact token count at the end of the stream.
+
+Fix in Infrastructure layer: IAiService.StreamCompletionAsync
+should return both tokens and usage count together.
+Consider returning a StreamingResult record instead of
+IAsyncEnumerable<string> directly.
+
 ### Document upload — synchronous vs asynchronous blob upload
 
 Considered: async blob upload via Worker after DB save
@@ -132,7 +143,7 @@ Decision: synchronous blob upload in handler
     File upload happens during HTTP request
     Compensating transaction handles DB failure
     Nightly cleanup handles orphaned blobs
-    
+
     Revisit if file size limits increase beyond 100MB
     or if upload latency becomes a problem
 
