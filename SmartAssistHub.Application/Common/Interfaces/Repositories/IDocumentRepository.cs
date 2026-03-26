@@ -1,4 +1,5 @@
-﻿using SmartAssistHub.Domain.Entities;
+﻿using SmartAssistHub.Application.Common.Models;
+using SmartAssistHub.Domain.Entities;
 
 namespace SmartAssistHub.Application.Common.Interfaces.Repositories;
 
@@ -16,7 +17,14 @@ public interface IDocumentRepository
     Task UpdateAsync(
         Document document,
         CancellationToken cancellationToken = default);
+
     Task DeleteAsync(
     Document document,
     CancellationToken cancellationToken = default);
+
+    Task<PagedResult<Document>> GetPagedByTenantAsync(
+        Guid tenantId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
 }
