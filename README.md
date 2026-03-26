@@ -30,15 +30,15 @@ production problem:
 
 Clean Architecture with strict dependency rules enforced at the compiler level.
 
-Domain → no dependencies (business entities)
+Domain — no dependencies — business entities
 
-Application → Domain (use cases, interfaces)
+Application — Domain — use cases and interfaces
 
-Persistence → Application + Domain (EF Core, repositories)
+Persistence — Application and Domain — EF Core and repositories
 
-Infrastructure → Application + Domain (Azure AI, Redis, Service Bus)
+Infrastructure — Application and Domain — Azure AI, Redis, Service Bus
 
-Api → all (composition root, HTTP, SignalR)
+Api — all layers — composition root, HTTP, SignalR
 
 ---
 
@@ -49,7 +49,7 @@ Api → all (composition root, HTTP, SignalR)
 | Runtime | .NET 8, ASP.NET Core |
 | AI | Azure OpenAI (GPT-4o), Semantic Kernel |
 | Caching | Azure Cache for Redis |
-| Database | Azure Cosmos DB + Azure SQL |
+| Database | Azure SQL |
 | Messaging | Azure Service Bus |
 | Auth | Azure AD B2C — OAuth2 / OIDC |
 | Gateway | Azure API Management |
@@ -63,9 +63,9 @@ Api → all (composition root, HTTP, SignalR)
 
 | Phase | Status |
 |---|---|
-| Solution structure + Domain entities | ✓ Complete |
-| Application layer + use cases | Pending |
-| Persistence layer + repositories | Pending |
+| Solution structure + Domain entities | Complete |
+| Application layer + use cases | Complete |
+| Persistence layer + repositories | In progress |
 | Infrastructure — AI + RAG pipeline | Pending |
 | Infrastructure — Caching + resilience | Pending |
 | Infrastructure — Messaging + Outbox | Pending |

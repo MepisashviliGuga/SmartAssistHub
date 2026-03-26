@@ -22,14 +22,14 @@ public class Tenant : BaseEntity
 
     private Tenant() { }
 
-    public static Tenant Create(string name, TenantPlan plan)
+    public static Tenant Create(string name, Slug slug, TenantPlan plan)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         var tenant = new Tenant
         {
             Name = name,
-            Slug = Slug.Generate(name),
+            Slug = slug,
             IsActive = true,
             Plan = plan,
             MonthlyTokenLimit = GetTokenLimitForPlan(plan),
@@ -81,6 +81,17 @@ public class Tenant : BaseEntity
     public void ResetMonthlyUsage()
     {
         TokensUsedThisMonth = 0;
+        SetUpdated();
+    }
+    public void UpdatePlan(TenantPlan newPlan)
+    {
+        if (Plan == newPlan)
+            throw new InvalidOperationException(
+                "Tenant is already on this plan.");
+
+        Plan = newPlan;
+        MonthlyTokenLimit = GetTokenLimitForPlan(newPlan);
+        RaiseDomainEvent(new TenantPlanUpdatedEvent(Id, newPlan.ToString()));
         SetUpdated();
     }
 
