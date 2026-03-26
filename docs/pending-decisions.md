@@ -120,3 +120,31 @@ records usage, allowing budget overruns.
 MessageCompletedEvent still fires via domain events for
 analytics and other side effects. Only the budget-critical
 RecordTokenUsage is handled synchronously.
+
+### Document upload — synchronous vs asynchronous blob upload
+
+Considered: async blob upload via Worker after DB save
+    + cleaner consistency model
+    - file stream unavailable after HTTP request completes
+    - poor UX (user sees pending instead of uploaded)
+
+Decision: synchronous blob upload in handler
+    File upload happens during HTTP request
+    Compensating transaction handles DB failure
+    Nightly cleanup handles orphaned blobs
+    
+    Revisit if file size limits increase beyond 100MB
+    or if upload latency becomes a problem
+
+### TenantPlanUpdatedEvent — no handler yet
+
+TenantPlanUpdatedEvent is raised when a tenant changes plan.
+Currently no handler exists — token limit is updated
+synchronously inside UpdatePlan() domain method.
+
+Future handlers needed:
+    - Billing system notification
+    - Owner confirmation email
+
+Handler implementation deferred to Infrastructure layer
+when billing integration is added.

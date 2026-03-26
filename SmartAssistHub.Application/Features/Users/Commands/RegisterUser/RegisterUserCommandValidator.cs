@@ -9,7 +9,9 @@ public class RegisterUserCommandValidator
     {
         RuleFor(x => x.ExternalId)
             .NotEmpty()
-            .WithMessage("ExternalId is required.");
+            .WithMessage("ExternalId is required.")
+            .Must(id => Guid.TryParse(id, out _))
+            .WithMessage("ExternalId must be a valid Guid.");
 
         RuleFor(x => x.TenantId)
             .NotEmpty()

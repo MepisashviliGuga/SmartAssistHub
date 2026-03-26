@@ -83,6 +83,17 @@ public class Tenant : BaseEntity
         TokensUsedThisMonth = 0;
         SetUpdated();
     }
+    public void UpdatePlan(TenantPlan newPlan)
+    {
+        if (Plan == newPlan)
+            throw new InvalidOperationException(
+                "Tenant is already on this plan.");
+
+        Plan = newPlan;
+        MonthlyTokenLimit = GetTokenLimitForPlan(newPlan);
+        RaiseDomainEvent(new TenantPlanUpdatedEvent(Id, newPlan.ToString()));
+        SetUpdated();
+    }
 
     public void Deactivate()
     {

@@ -9,10 +9,6 @@ public interface IDocumentRepository
         Guid tenantId,
         CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<Document>> GetByTenantIdAsync(
-        Guid tenantId,
-        CancellationToken cancellationToken = default);
-
     Task AddAsync(
         Document document,
         CancellationToken cancellationToken = default);
@@ -20,4 +16,7 @@ public interface IDocumentRepository
     Task UpdateAsync(
         Document document,
         CancellationToken cancellationToken = default);
+    Task DeleteAsync(
+    Document document,
+    CancellationToken cancellationToken = default);
 }
