@@ -109,10 +109,10 @@ public class SendMessageCommandHandler
             fullResponse.ToString(),
             tokenCount);
 
-        tenant.RecordTokenUsage(tokenCount);
-
-        await _conversationRepository
-            .UpdateAsync(conversation, cancellationToken);
+        await _tenantRepository.IncrementTokenUsageAsync(
+            command.TenantId,
+            tokenCount,
+            cancellationToken);
 
         await _tenantRepository
             .UpdateAsync(tenant, cancellationToken);
