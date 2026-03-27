@@ -37,4 +37,9 @@ public interface ITenantRepository
         int page,
         int pageSize,
         CancellationToken cancellationToken = default);
+
+    Task IncrementTokenUsageAsync(
+        Guid tenantId,
+        int tokensUsed,
+        CancellationToken cancellationToken = default);
 }

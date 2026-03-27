@@ -19,7 +19,7 @@ public class Tenant : BaseEntity
 
     private readonly List<Document> _documents = new();
     public IReadOnlyCollection<Document> Documents => _documents.AsReadOnly();
-
+    public byte[] RowVersion { get; private set; } = null!;
     private Tenant() { }
 
     public static Tenant Create(string name, Slug slug, TenantPlan plan)

@@ -106,20 +106,18 @@ Use UnauthorizedException when:
     - No JWT token present
     - JWT token is invalid or expired
 
-### SendMessage — synchronous token recording exception
+### SendMessage — token recording strategy
 
-In SendMessage handler, tenant.RecordTokenUsage() is called
-synchronously in the same transaction as the conversation save.
+Token usage is recorded via IncrementTokenUsageAsync — an atomic
+SQL UPDATE that runs after the conversation is saved.
 
-This is an intentional exception to the eventual consistency
-rule for token tracking. The budget check happens at request
-start — if we defer token recording to the Outbox, concurrent
-requests could all pass the budget check before any of them
-records usage, allowing budget overruns.
+This replaces the original tenant.RecordTokenUsage() + UpdateAsync
+approach which had a race condition under concurrent load.
 
-MessageCompletedEvent still fires via domain events for
-analytics and other side effects. Only the budget-critical
-RecordTokenUsage is handled synchronously.
+If IncrementTokenUsageAsync fails, MessageCompletedEvent will
+eventually trigger token recording via the event handler as fallback.
+
+MessageCompletedEvent still fires for analytics and other side effects.
 
 ### SendMessage — token counting optimization
 
@@ -142,8 +140,8 @@ Considered: async blob upload via Worker after DB save
 Decision: synchronous blob upload in handler
     File upload happens during HTTP request
     Compensating transaction handles DB failure
+    If compensating delete also fails — blob is logged as orphaned
     Nightly cleanup handles orphaned blobs
-
     Revisit if file size limits increase beyond 100MB
     or if upload latency becomes a problem
 
@@ -159,3 +157,57 @@ Future handlers needed:
 
 Handler implementation deferred to Infrastructure layer
 when billing integration is added.
+
+### Concurrency control strategy
+
+Tenant entity has RowVersion for optimistic concurrency on
+general field updates.
+
+Token usage increments use atomic SQL UPDATE rather than
+read-modify-write to prevent lost updates under concurrent load:
+    UPDATE Tenants SET TokensUsedThisMonth += @tokens WHERE Id = @id
+
+This is more performant than pessimistic locking and more
+correct than optimistic concurrency for high-frequency counters.
+
+IncrementTokenUsageAsync added to ITenantRepository.
+SendMessageCommandHandler updated to use atomic increment
+instead of tenant.RecordTokenUsage() + UpdateAsync.
+
+### Vector embedding storage strategy
+
+DocumentChunk.Embedding (float[]) must NEVER be loaded as part
+of standard Document aggregate queries. Loading 1000 chunks with
+1536 floats each allocates ~6MB on the Large Object Heap causing
+GC pauses.
+
+Strategy:
+    - Embeddings stored in Azure AI Search (primary vector store)
+    - EF Core configuration ignores the Embedding property via Ignore()
+    - DocumentChunk.Embedding used only during processing pipeline
+    - Never included in standard repository queries
+    - GetEmbeddingSnapshot() used by Infrastructure when sending to Azure AI Search
+
+### Pagination strategy — offset vs cursor
+
+Standard queries (Tenants, Users, Documents):
+    Offset pagination is acceptable — these lists grow slowly
+
+Messages within a conversation:
+    Cursor-based pagination required — conversations can have
+    thousands of messages. Use CreatedAt as cursor:
+    WHERE CreatedAt < @cursor ORDER BY CreatedAt DESC
+    Built in Persistence layer when implementing conversation queries.
+
+### DbUpdateConcurrencyException retry strategy
+
+When RowVersion conflict is detected EF Core throws
+DbUpdateConcurrencyException.
+
+Strategy: ConcurrencyRetryBehavior in MediatR pipeline.
+    - Catches DbUpdateConcurrencyException
+    - Retries up to 3 times using Polly
+    - Logs each retry attempt
+    - Returns HTTP 409 after 3 failed attempts
+
+Implementation deferred to Phase 5 (API layer).
