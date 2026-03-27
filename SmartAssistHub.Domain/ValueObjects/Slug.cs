@@ -6,12 +6,13 @@ namespace SmartAssistHub.Domain.ValueObjects;
 
 public record Slug
 {
-    public string Value { get; }
+    public string Value { get; } = null!;
 
     private Slug(string value)
     {
         Value = value;
     }
+    private Slug() { }
 
     public static Slug Generate(string input, int maxLength = 100)
     {

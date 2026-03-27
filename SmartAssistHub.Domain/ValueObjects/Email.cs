@@ -8,13 +8,15 @@ public record Email
         @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    public string Value { get; }
+    public string Value { get; } = null!;
 
     private Email(string value)
     {
         Value = value;
     }
 
+    private Email() { }
+    
     public static Email Create(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);

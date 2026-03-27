@@ -7,7 +7,7 @@ public record FileSize
     public long Bytes { get; }
 
     private FileSize(long bytes) => Bytes = bytes;
-
+    private FileSize() { }
     public static FileSize Create(long bytes)
     {
         if (bytes <= 0)
