@@ -7,7 +7,6 @@ public record FileSize
     public long Bytes { get; }
 
     private FileSize(long bytes) => Bytes = bytes;
-    private FileSize() { }
     public static FileSize Create(long bytes)
     {
         if (bytes <= 0)
@@ -21,7 +20,10 @@ public record FileSize
 
         return new FileSize(bytes);
     }
-
+    internal static FileSize FromDatabase(long bytes)
+    {
+        return new FileSize(bytes);
+    }
     public double ToKilobytes() => Math.Round(Bytes / 1024.0, 2);
     public double ToMegabytes() => Math.Round(Bytes / (1024.0 * 1024.0), 2);
 

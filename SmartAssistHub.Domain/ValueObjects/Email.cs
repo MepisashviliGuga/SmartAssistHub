@@ -15,7 +15,6 @@ public record Email
         Value = value;
     }
 
-    private Email() { }
     
     public static Email Create(string value)
     {
@@ -34,6 +33,9 @@ public record Email
     {
         return value.Trim().ToLowerInvariant();
     }
-
+    internal static Email FromDatabase(string value)
+    {
+        return new Email(value);
+    }
     public override string ToString() => Value;
 }

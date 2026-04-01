@@ -35,13 +35,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.ComplexProperty(u => u.Email, b =>
-        {
-            b.Property(e => e.Value)
-                .HasColumnName("Email")
-                .HasMaxLength(256)
-                .IsRequired();
-        });
+        builder.Property(u => u.Email)
+            .IsRequired()
+            .HasMaxLength(256)
+            .HasConversion(
+        email => email.Value,
+        value => Email.FromDatabase(value));
 
         builder.HasIndex(u => new { u.TenantId, u.Email })
             .IsUnique()

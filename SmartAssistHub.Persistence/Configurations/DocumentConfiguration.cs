@@ -33,12 +33,11 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.ComplexProperty(d => d.FileSizeBytes, b =>
-        {
-            b.Property(f => f.Bytes)
-                .HasColumnName("FileSizeBytes")
-                .IsRequired();
-        });
+        builder.Property(d => d.FileSizeBytes)
+            .IsRequired()
+            .HasConversion(
+                fileSize => fileSize.Bytes,
+                value => FileSize.FromDatabase(value));
 
         builder.Property(d => d.BlobStoragePath)
             .IsRequired()
@@ -64,11 +63,6 @@ public class DocumentConfiguration : IEntityTypeConfiguration<Document>
 
         builder.HasIndex(d => new { d.TenantId, d.Status })
             .HasDatabaseName("IX_Documents_TenantId_Status");
-
-        builder.HasOne<Tenant>()
-            .WithMany(t => t.Documents)
-            .HasForeignKey(d => d.TenantId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne<User>()
             .WithMany()

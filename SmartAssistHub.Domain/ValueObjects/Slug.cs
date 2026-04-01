@@ -12,7 +12,6 @@ public record Slug
     {
         Value = value;
     }
-    private Slug() { }
 
     public static Slug Generate(string input, int maxLength = 100)
     {
@@ -55,6 +54,10 @@ public record Slug
     {
         return value.Trim().ToLowerInvariant();
     }
-
+    internal static Slug FromTrustedValue(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        return new Slug(value);
+    }
     public override string ToString() => Value;
 }

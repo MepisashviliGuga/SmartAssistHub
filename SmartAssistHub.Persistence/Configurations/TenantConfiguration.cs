@@ -20,16 +20,16 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.ComplexProperty(t => t.Slug, b =>
-        {
-            b.Property(s => s.Value)
-                .HasColumnName("Slug")
-                .HasMaxLength(100)
-                .IsRequired();
-        });
+        builder.Property(t => t.Slug)
+            .IsRequired()
+            .HasMaxLength(100)
+            .HasConversion(
+                slug => slug.Value,
+                value => Slug.FromTrustedValue(value));
 
         builder.HasIndex(t => t.Slug)
-            .IsUnique();
+            .IsUnique()
+            .HasDatabaseName("UX_Tenants_Slug");
 
         builder.Property(t => t.IsActive)
             .IsRequired();
@@ -62,9 +62,5 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
             .WithOne()
             .HasForeignKey(d => d.TenantId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasIndex(t => t.Slug)
-            .IsUnique()
-            .HasDatabaseName("UX_Tenants_Slug");
     }
 }
