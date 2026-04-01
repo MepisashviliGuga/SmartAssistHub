@@ -211,3 +211,17 @@ Strategy: ConcurrencyRetryBehavior in MediatR pipeline.
     - Returns HTTP 409 after 3 failed attempts
 
 Implementation deferred to Phase 5 (API layer).
+
+### Slug uniqueness race condition
+
+GenerateUniqueSlugAsync is a best-effort pre-check only.
+Under concurrent load two requests can generate the same slug
+and hit the UX_Tenants_Slug unique constraint.
+
+The database constraint prevents data corruption.
+The application currently returns a 500 error in this case.
+
+Mitigation deferred — tenant creation is rare enough that
+concurrent collisions are theoretical. If needed, add retry
+logic in CreateTenantCommandHandler catching DbUpdateException
+on UX_Tenants_Slug constraint violation.

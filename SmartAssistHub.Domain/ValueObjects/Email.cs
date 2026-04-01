@@ -30,5 +30,10 @@ public record Email
         return new Email(normalized);
     }
 
+    public static string Normalize(string value)
+    {
+        return value.Trim().ToLowerInvariant();
+    }
+
     public override string ToString() => Value;
 }

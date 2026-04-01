@@ -51,5 +51,10 @@ public record Slug
         return builder.ToString().Normalize(NormalizationForm.FormC);
     }
 
+    public static string Normalize(string value)
+    {
+        return value.Trim().ToLowerInvariant();
+    }
+
     public override string ToString() => Value;
 }
