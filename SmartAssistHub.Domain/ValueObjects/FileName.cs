@@ -43,6 +43,9 @@ public record FileName
 
         return new FileName(trimmed);
     }
-
+    internal static FileName FromDatabase(string value)
+    {
+        return new FileName(value);
+    }
     public override string ToString() => Value;
 }

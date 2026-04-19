@@ -6,7 +6,7 @@ namespace SmartAssistHub.Domain.ValueObjects;
 
 public record Slug
 {
-    public string Value { get; }
+    public string Value { get; } = null!;
 
     private Slug(string value)
     {
@@ -50,5 +50,14 @@ public record Slug
         return builder.ToString().Normalize(NormalizationForm.FormC);
     }
 
+    public static string Normalize(string value)
+    {
+        return value.Trim().ToLowerInvariant();
+    }
+    internal static Slug FromTrustedValue(string value)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        return new Slug(value);
+    }
     public override string ToString() => Value;
 }
