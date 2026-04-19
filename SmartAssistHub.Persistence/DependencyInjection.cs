@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartAssistHub.Application.Common.Interfaces;
 using SmartAssistHub.Application.Common.Interfaces.Repositories;
 using SmartAssistHub.Persistence.Context;
+using SmartAssistHub.Persistence.Outbox;
 using SmartAssistHub.Persistence.Repositories;
 
 namespace SmartAssistHub.Persistence;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IConversationRepository, ConversationRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddHostedService<OutboxPoller>();
 
         return services;
     }
