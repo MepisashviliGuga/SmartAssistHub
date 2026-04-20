@@ -28,11 +28,11 @@ public class TenantRepository : ITenantRepository
         string slug,
         CancellationToken cancellationToken = default)
     {
-        var normalizedSlug = Slug.Normalize(slug);
+        var normalizedSlug = Slug.FromTrustedValue(Slug.Normalize(slug));
 
         return await _context.Tenants
             .FirstOrDefaultAsync(
-                t => t.Slug.Value == normalizedSlug,
+                t => t.Slug == normalizedSlug,
                 cancellationToken);
     }
 
@@ -45,15 +45,14 @@ public class TenantRepository : ITenantRepository
     }
 
     public async Task<bool> SlugExistsAsync(
-        string slug,
-        CancellationToken cancellationToken = default)
+     string slug,
+     CancellationToken cancellationToken = default)
     {
-        
-        var normalizedSlug = Slug.Normalize(slug);
+        var normalizedSlug = Slug.FromTrustedValue(Slug.Normalize(slug));
 
         return await _context.Tenants
             .AnyAsync(
-                t => t.Slug.Value == normalizedSlug,
+                t => t.Slug == normalizedSlug,
                 cancellationToken);
     }
 

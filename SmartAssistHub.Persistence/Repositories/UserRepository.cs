@@ -25,16 +25,16 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<User?> GetByEmailAsync(
-        string email,
-        Guid tenantId,
-        CancellationToken cancellationToken = default)
+    string email,
+    Guid tenantId,
+    CancellationToken cancellationToken = default)
     {
-        var normalizedEmail = Email.Normalize(email);
+        var normalizedEmail = Email.FromDatabase(Email.Normalize(email));
 
         return await _context.Users
             .FirstOrDefaultAsync(
                 u => u.TenantId == tenantId &&
-                     u.Email.Value == normalizedEmail,
+                     u.Email == normalizedEmail,
                 cancellationToken);
     }
 
@@ -53,12 +53,12 @@ public class UserRepository : IUserRepository
         Guid tenantId,
         CancellationToken cancellationToken = default)
     {
-        var normalizedEmail = Email.Normalize(email);
+        var normalizedEmail = Email.FromDatabase(Email.Normalize(email));
 
         return await _context.Users
             .AnyAsync(
                 u => u.TenantId == tenantId &&
-                     u.Email.Value == normalizedEmail,
+                     u.Email == normalizedEmail,
                 cancellationToken);
     }
 
