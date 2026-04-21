@@ -21,8 +21,4 @@
     <ProjectReference Include="..\SmartAssistHub.Persistence\SmartAssistHub.Persistence.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
