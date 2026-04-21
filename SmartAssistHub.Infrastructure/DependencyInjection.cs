@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SmartAssistHub.Application.Common.Interfaces.Services;
 using SmartAssistHub.Infrastructure.Ai;
 using SmartAssistHub.Infrastructure.Configuration;
+using SmartAssistHub.Infrastructure.Documents;
 using SmartAssistHub.Infrastructure.Email;
 using SmartAssistHub.Infrastructure.Search;
 using SmartAssistHub.Infrastructure.Storage;
@@ -30,6 +31,8 @@ public static class DependencyInjection
             configuration.GetSection(ChunkingOptions.SectionName));
 
         services.AddSingleton<IDocumentChunker, RecursiveDocumentChunker>();
+
+        services.AddScoped<IDocumentTextExtractor, PlainTextExtractor>();
         return services;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using SharpToken;
+using SmartAssistHub.Application.Common.Interfaces.Services;
 using SmartAssistHub.Infrastructure.Configuration;
 
 namespace SmartAssistHub.Infrastructure.Ai;

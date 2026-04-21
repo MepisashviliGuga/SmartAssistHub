@@ -44,7 +44,7 @@ public class DocumentsController : ControllerBase
 
     [HttpPost("test-chunking")]
     public IActionResult TestChunking(
-    [FromServices] SmartAssistHub.Infrastructure.Ai.IDocumentChunker chunker,
+    [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IDocumentChunker chunker,
     [FromBody] TestChunkingRequest request)
     {
         var chunks = chunker.Chunk(request.Text);
@@ -145,6 +145,55 @@ public class DocumentsController : ControllerBase
             indexedChunks = sampleChunks.Length,
             query,
             topResults = results
+        });
+    }
+
+
+
+    [HttpPost("test-full-pipeline")]
+    public async Task<IActionResult> TestFullPipeline(
+    IFormFile file,
+    [FromServices] IMediator mediator,
+    [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IDocumentSearchService searchService,
+    CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest("No file uploaded.");
+
+        var tenantId = Guid.Parse("a068b85d-3242-4257-a266-56d3746053da");
+        var userId = Guid.Parse("54D94DBC-BE6D-400E-B371-BED8317880DD");
+
+        // Step 1 — upload document
+        using var stream = file.OpenReadStream();
+        var uploadResult = await mediator.Send(
+            new SmartAssistHub.Application.Features.Documents
+                .Commands.UploadDocument.UploadDocumentCommand(
+                    TenantId: tenantId,
+                    UploadedByUserId: userId,
+                    FileName: file.FileName,
+                    ContentType: file.ContentType,
+                    FileSizeBytes: file.Length,
+                    FileStream: stream),
+            cancellationToken);
+
+        // Step 2 — process the document
+        await mediator.Send(
+            new SmartAssistHub.Application.Features.Documents
+                .Commands.ProcessDocument.ProcessDocumentCommand(
+                    DocumentId: uploadResult.DocumentId,
+                    TenantId: tenantId),
+            cancellationToken);
+
+        // Step 3 — search
+        var query = "What is this document about?";
+        var results = await searchService.SearchRelevantChunksAsync(
+            query, tenantId, maxChunks: 3, cancellationToken);
+
+        return Ok(new
+        {
+            documentId = uploadResult.DocumentId,
+            query,
+            topChunks = results
         });
     }
 }
