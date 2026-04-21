@@ -23,7 +23,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IBlobStorageService, AzureBlobStorageService>();
         services.AddSingleton<IAiService, OpenAiService>();
-        services.AddScoped<IDocumentSearchService, DocumentSearchServiceStub>();
+        services.AddSingleton<IDocumentSearchService, InMemoryDocumentSearchService>();
         services.AddScoped<IEmailService, ConsoleEmailService>();
 
         services.Configure<ChunkingOptions>(

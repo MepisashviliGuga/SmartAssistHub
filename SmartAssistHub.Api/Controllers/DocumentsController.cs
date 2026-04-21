@@ -105,4 +105,46 @@ public class DocumentsController : ControllerBase
 
     public record TestAiRequest(string Question);
     public record TestEmbeddingRequest(string Text);
+
+    [HttpPost("test-search")]
+    public async Task<IActionResult> TestSearch(
+    [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IAiService ai,
+    [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IDocumentSearchService search,
+    CancellationToken cancellationToken)
+    {
+        var tenantId = Guid.NewGuid();
+
+        var sampleChunks = new[]
+        {
+        "Our refund policy allows full refunds within 30 days of purchase. Simply contact customer support with your order number.",
+        "We offer customer support 24/7 through email, chat, and phone. Average response time is 2 minutes for chat.",
+        "Our company was founded in 2015 and has grown to over 500 employees across 15 countries worldwide.",
+        "Premium subscribers get access to advanced AI features including custom model training and unlimited API calls.",
+        "Shipping is free for orders over $50 within the United States. International shipping rates vary by destination."
+    };
+
+        foreach (var chunk in sampleChunks)
+        {
+            var embedding = await ai.GetEmbeddingAsync(chunk, cancellationToken);
+            await search.IndexChunkAsync(
+                chunkId: Guid.NewGuid(),
+                documentId: Guid.NewGuid(),
+                tenantId: tenantId,
+                content: chunk,
+                embedding: embedding,
+                cancellationToken: cancellationToken);
+        }
+
+        var query = "How do I get my money back?";
+        var results = await search.SearchRelevantChunksAsync(
+            query, tenantId, maxChunks: 3, cancellationToken: cancellationToken);
+
+        return Ok(new
+        {
+            tenantId,
+            indexedChunks = sampleChunks.Length,
+            query,
+            topResults = results
+        });
+    }
 }
