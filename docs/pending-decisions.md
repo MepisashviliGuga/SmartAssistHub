@@ -225,3 +225,19 @@ Mitigation deferred — tenant creation is rare enough that
 concurrent collisions are theoretical. If needed, add retry
 logic in CreateTenantCommandHandler catching DbUpdateException
 on UX_Tenants_Slug constraint violation.
+
+### Token counting coupling (deferred)
+
+Both OpenAiService and RecursiveDocumentChunker create their own
+GptEncoding instances directly. This duplicates tokenizer loading
+and creates risk of encoding drift between services.
+
+When a third tokenization use case appears (likely context truncation
+in SendMessage handler), refactor to extract ITokenCounter interface
+with TiktokenCounter implementation. All services then receive
+ITokenCounter via DI.
+
+Acceptable for now because:
+- Both services live in Infrastructure layer
+- Both use the same hardcoded encoding name
+- Risk is contained to a single layer

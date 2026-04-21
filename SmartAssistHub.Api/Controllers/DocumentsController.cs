@@ -66,4 +66,43 @@ public class DocumentsController : ControllerBase
     }
 
     public record TestChunkingRequest(string Text);
+
+    [HttpPost("test-ai")]
+    public async Task<IActionResult> TestAi(
+    [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IAiService ai,
+    [FromBody] TestAiRequest request,
+    CancellationToken cancellationToken)
+    {
+        var response = new System.Text.StringBuilder();
+
+        await foreach (var token in ai.StreamCompletionAsync(
+            systemPrompt: "You are a helpful assistant. Answer in one short sentence.",
+            userMessage: request.Question,
+            contextChunks: Array.Empty<string>(),
+            cancellationToken: cancellationToken))
+        {
+            response.Append(token);
+        }
+
+        return Ok(new { question = request.Question, answer = response.ToString() });
+    }
+
+    [HttpPost("test-embedding")]
+    public async Task<IActionResult> TestEmbedding(
+        [FromServices] SmartAssistHub.Application.Common.Interfaces.Services.IAiService ai,
+        [FromBody] TestEmbeddingRequest request,
+        CancellationToken cancellationToken)
+    {
+        var embedding = await ai.GetEmbeddingAsync(request.Text, cancellationToken);
+
+        return Ok(new
+        {
+            text = request.Text,
+            dimensions = embedding.Length,
+            firstTenValues = embedding.Take(10).ToArray()
+        });
+    }
+
+    public record TestAiRequest(string Question);
+    public record TestEmbeddingRequest(string Text);
 }

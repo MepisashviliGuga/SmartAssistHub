@@ -18,8 +18,11 @@ public static class DependencyInjection
         services.Configure<BlobStorageOptions>(
             configuration.GetSection(BlobStorageOptions.SectionName));
 
+        services.Configure<OpenAiOptions>(
+            configuration.GetSection(OpenAiOptions.SectionName));
+
         services.AddSingleton<IBlobStorageService, AzureBlobStorageService>();
-        services.AddScoped<IAiService, AiServiceStub>();
+        services.AddSingleton<IAiService, OpenAiService>();
         services.AddScoped<IDocumentSearchService, DocumentSearchServiceStub>();
         services.AddScoped<IEmailService, ConsoleEmailService>();
 
