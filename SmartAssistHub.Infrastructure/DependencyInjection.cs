@@ -22,6 +22,11 @@ public static class DependencyInjection
         services.AddScoped<IAiService, AiServiceStub>();
         services.AddScoped<IDocumentSearchService, DocumentSearchServiceStub>();
         services.AddScoped<IEmailService, ConsoleEmailService>();
+
+        services.Configure<ChunkingOptions>(
+            configuration.GetSection(ChunkingOptions.SectionName));
+
+        services.AddSingleton<IDocumentChunker, RecursiveDocumentChunker>();
         return services;
     }
 }

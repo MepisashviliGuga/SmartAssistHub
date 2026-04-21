@@ -41,4 +41,29 @@ public class DocumentsController : ControllerBase
             size = file.Length
         });
     }
+
+    [HttpPost("test-chunking")]
+    public IActionResult TestChunking(
+    [FromServices] SmartAssistHub.Infrastructure.Ai.IDocumentChunker chunker,
+    [FromBody] TestChunkingRequest request)
+    {
+        var chunks = chunker.Chunk(request.Text);
+
+        return Ok(new
+        {
+            totalChunks = chunks.Count,
+            totalTokens = chunks.Sum(c => c.TokenCount),
+            chunks = chunks.Select(c => new
+            {
+                c.Index,
+                c.TokenCount,
+                Preview = c.Content.Length > 100
+                    ? c.Content[..100] + "..."
+                    : c.Content,
+                FullContent = c.Content
+            })
+        });
+    }
+
+    public record TestChunkingRequest(string Text);
 }
