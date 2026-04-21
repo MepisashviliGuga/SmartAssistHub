@@ -21,7 +21,7 @@ public static class DependencyInjection
         services.AddSingleton<IBlobStorageService, AzureBlobStorageService>();
         services.AddScoped<IAiService, AiServiceStub>();
         services.AddScoped<IDocumentSearchService, DocumentSearchServiceStub>();
-        services.AddScoped<IEmailService, EmailServiceStub>();
+        services.AddScoped<IEmailService, ConsoleEmailService>();
         return services;
     }
 }
